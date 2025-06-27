@@ -24,9 +24,13 @@ internal class RedisCachedPermissionService : IPermissionService
         if (json != null)
             return JsonSerializer.Deserialize<List<string>>(json) ?? new();
 
-        var perms = (await _store.GetPermissionsForUserAsync(userId)).ToList();
-        await _redis.SetStringAsync(key, JsonSerializer.Serialize(perms));
-        return perms;
+        var perms = await _store.GetPermissionsForUserAsync(userId);
+        var globalPerms = await _store.GetAllPermissionsAsync();
+        perms.UnionWith(globalPerms);
+
+        var permsList = perms.ToList();
+        await _redis.SetStringAsync(key, JsonSerializer.Serialize(permsList));
+        return permsList;
     }
 
     public async Task AddPermissionToUserAsync(string userId, string permission)

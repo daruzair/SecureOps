@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SecureOps.Services;
 using SecureOps.Services.Cache.Enums;
@@ -9,13 +10,11 @@ namespace SecureOps;
 
 public static class SecureOpsExtensions
 {
-    public static IServiceCollection AddSecureOps(
-         this IServiceCollection services,
-         Action<SecureOpsOptions>? configure = null)
+    public static AuthenticationBuilder AddSecureOps(this IServiceCollection services, Action<SecureOpsOptions>? configure = null)
     {
         var options = new SecureOpsOptions();
         configure?.Invoke(options);
-
+        
         services.TryAddSingleton<IPermissionStore, InMemoryPermissionStore>();
 
         if (options.CacheMode == CacheMode.Redis)
@@ -27,17 +26,43 @@ public static class SecureOpsExtensions
             services.AddMemoryCache();
             services.AddScoped<IPermissionService, CachedPermissionService>();
         }
+        // Register Authentication
+        var builder = services.AddAuthentication(auth =>
+        {
+            if (options.AuthenticationOptions != null)
+            {
+                auth.DefaultScheme = options.AuthenticationOptions.DefaultScheme;
+                auth.DefaultChallengeScheme = options.AuthenticationOptions.DefaultChallengeScheme;
+                auth.DefaultAuthenticateScheme = options.AuthenticationOptions.DefaultAuthenticateScheme;
+                auth.DefaultForbidScheme = options.AuthenticationOptions.DefaultForbidScheme;
+                auth.DefaultSignInScheme = options.AuthenticationOptions.DefaultSignInScheme;
+                auth.DefaultSignOutScheme = options.AuthenticationOptions.DefaultSignOutScheme;
+            }
+        });
 
-        return services;
+        services.AddAuthorization();
+
+        return builder;
     }
-
-    public static IServiceCollection AddSecureOps<TStore>(
-        this IServiceCollection services,
-        Action<SecureOpsOptions> configure)
+    public static AuthenticationBuilder AddSecureOps(this IServiceCollection services, string DefaultScheme)
+    {
+        return services.AddSecureOps(configure =>
+        {
+            configure.AuthenticationOptions.DefaultScheme = DefaultScheme;
+        });
+    }
+    public static AuthenticationBuilder AddSecureOps<TStore>(this IServiceCollection services,Action<SecureOpsOptions> configure)
         where TStore : class, IPermissionStore
     {
         services.AddScoped<IPermissionStore, TStore>();
 
         return services.AddSecureOps(configure);
+    }
+    public static AuthenticationBuilder AddSecureOps<TStore>(this IServiceCollection services,string DefaultScheme)
+        where TStore : class, IPermissionStore
+    {
+        services.AddScoped<IPermissionStore, TStore>();
+
+        return services.AddSecureOps(DefaultScheme);
     }
 }

@@ -69,4 +69,5 @@ internal class InMemoryPermissionStore : IPermissionStore
         }
         return Task.CompletedTask;
     }
+
 }

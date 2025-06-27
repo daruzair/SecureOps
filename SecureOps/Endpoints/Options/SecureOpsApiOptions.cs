@@ -8,19 +8,19 @@ public class SecureOpsApiOptions
     /// Enables or disables endpoints related to adding, removing, and retrieving user-specific permissions.
     /// Default is <c>true</c>.
     /// </summary>
-    public bool EnableUserPermissionManagement { get; set; } = true;
+    public bool EnableUserPermissionManagement { get; set; } = false;
 
     /// <summary>
     /// Enables or disables endpoints for managing global permissions (e.g., registering all available features).
     /// Default is <c>true</c>.
     /// </summary>
-    public bool EnableGlobalPermissionManagement { get; set; } = true;
+    public bool EnableGlobalPermissionManagement { get; set; } = false;
 
     /// <summary>
     /// Enables or disables the endpoint for listing all registered permissions.
     /// Default is <c>true</c>.
     /// </summary>
-    public bool EnableListingAllPermissions { get; set; } = true;
+    public bool EnableListingAllPermissions { get; set; } = false;
 
     /// <summary>
     /// The route prefix under which the permission API endpoints will be exposed.

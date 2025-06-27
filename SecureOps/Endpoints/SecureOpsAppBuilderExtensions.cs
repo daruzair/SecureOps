@@ -20,7 +20,7 @@ public static class SecureOpsAppBuilderExtensions
     {
         var ops = new SecureOpsOptions();
         configure?.Invoke(ops);
-
+        
         if (ops.ApiOptions is not null)
         {
             MapPermissionEndpoints(app,options =>
@@ -32,7 +32,8 @@ public static class SecureOpsAppBuilderExtensions
                 options.EnableListingAllPermissions = ops.ApiOptions.EnableListingAllPermissions;
             });
         }
-
+        app.UseAuthentication();
+        app.UseAuthorization();
         return app;
     }
 

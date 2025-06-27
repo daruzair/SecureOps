@@ -18,6 +18,12 @@ public class HasPermissionAttribute : Attribute, IAsyncAuthorizationFilter
         var user = context.HttpContext.User;
         var userId = user?.Identity?.Name;
 
+        if (!(user?.Identity?.IsAuthenticated ?? false))
+        {
+            context.Result = new UnauthorizedResult();
+            return;
+        }
+
         if (string.IsNullOrEmpty(userId))
         {
             context.Result = new UnauthorizedResult();

@@ -41,6 +41,8 @@ internal class CachedPermissionService : IPermissionService
         if (!_cache.TryGetValue(key, out List<string>? cached))
         {
             var perms = await _store.GetPermissionsForUserAsync(userId);
+            var globalPerms = await _store.GetAllPermissionsAsync();
+            perms.UnionWith(globalPerms);
             cached = perms.ToList();
             _cache.Set(key, cached, _cacheOptions);
         }
