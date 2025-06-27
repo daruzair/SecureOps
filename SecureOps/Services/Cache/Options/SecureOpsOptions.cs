@@ -2,7 +2,7 @@
 
 namespace SecureOps.Services.Cache.Options;
 
-public class PermissionAuthorizationOptions
+public class SecureOpsOptions
 {
     public CacheMode CacheMode { get; set; } = CacheMode.Memory;
     public void UseRedis() => CacheMode = CacheMode.Redis;

@@ -2,7 +2,7 @@
 /// <summary>
 /// Configuration options for exposing the built-in permission management API endpoints.
 /// </summary>
-public class PermissionApiOptions
+public class SecureOpsApiOptions
 {
     /// <summary>
     /// Enables or disables endpoints related to adding, removing, and retrieving user-specific permissions.

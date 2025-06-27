@@ -6,13 +6,41 @@ using SecureOps.Endpoints.Options;
 using SecureOps.Services;
 
 namespace SecureOps.Endpoints;
-public static class PermissionApiEndpointExtensions
+public static class SecureOpsAppBuilderExtensions
 {
-    public static IEndpointRouteBuilder MapPermissionEndpoints(
-        this IEndpointRouteBuilder app,
-        Action<PermissionApiOptions>? configure = null)
+    /// <summary>
+    /// Registers SecureOps-related endpoints into the routing system using the provided configuration.
+    /// </summary>
+    /// <param name="app">The web application.</param>
+    /// <param name="configure">The delegate used to configure endpoints like permission APIs.</param>
+    /// <returns>The original web application (for chaining).</returns>
+    public static WebApplication UseSecureOps(
+        this WebApplication app,
+        Action<SecureOpsOptions>? configure = null)
     {
-        var options = new PermissionApiOptions();
+        var ops = new SecureOpsOptions();
+        configure?.Invoke(ops);
+
+        if (ops.ApiOptions is not null)
+        {
+            MapPermissionEndpoints(app,options =>
+            {
+                options.RoutePrefix = ops.ApiOptions.RoutePrefix;
+                options.PermissionClaim = ops.ApiOptions.PermissionClaim;
+                options.EnableUserPermissionManagement = ops.ApiOptions.EnableUserPermissionManagement;
+                options.EnableGlobalPermissionManagement = ops.ApiOptions.EnableGlobalPermissionManagement;
+                options.EnableListingAllPermissions = ops.ApiOptions.EnableListingAllPermissions;
+            });
+        }
+
+        return app;
+    }
+
+    private static void MapPermissionEndpoints(
+        IEndpointRouteBuilder app,
+        Action<SecureOpsApiOptions>? configure = null)
+    {
+        var options = new SecureOpsApiOptions();
         configure?.Invoke(options);
 
         var group = app.MapGroup(options.RoutePrefix).WithTags("Permissions");
@@ -82,6 +110,5 @@ public static class PermissionApiEndpointExtensions
             });
         }
 
-        return app;
     }
 }

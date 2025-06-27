@@ -7,14 +7,14 @@ using SecureOps.Services.CacheServices;
 
 namespace SecureOps;
 
-public static class PermissionAuthorizationExtensions
+public static class SecureOpsExtensions
 {
-    public static IServiceCollection AddPermissionAuthorization(
-        this IServiceCollection services,
-        Action<PermissionAuthorizationOptions> configure)
+    public static IServiceCollection AddSecureOps(
+         this IServiceCollection services,
+         Action<SecureOpsOptions>? configure = null)
     {
-        var options = new PermissionAuthorizationOptions();
-        configure(options);
+        var options = new SecureOpsOptions();
+        configure?.Invoke(options);
 
         services.TryAddSingleton<IPermissionStore, InMemoryPermissionStore>();
 
@@ -31,13 +31,13 @@ public static class PermissionAuthorizationExtensions
         return services;
     }
 
-    public static IServiceCollection AddPermissionAuthorization<TStore>(
+    public static IServiceCollection AddSecureOps<TStore>(
         this IServiceCollection services,
-        Action<PermissionAuthorizationOptions> configure)
+        Action<SecureOpsOptions> configure)
         where TStore : class, IPermissionStore
     {
         services.AddScoped<IPermissionStore, TStore>();
 
-        return services.AddPermissionAuthorization(configure);
+        return services.AddSecureOps(configure);
     }
 }
