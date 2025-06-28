@@ -6,14 +6,33 @@ using SecureOps.Endpoints.Options;
 using SecureOps.Services;
 
 namespace SecureOps.Endpoints;
+
+/// <summary>
+/// Configures SecureOps endpoints in the web application, enabling features such as user and global  permission
+/// management, and listing all permissions.
+/// </summary>
+/// <remarks>This method registers SecureOps endpoints based on the provided configuration. It applies 
+/// authentication and authorization middleware to ensure secure access to the endpoints.   Example usage: <code> var
+/// builder = WebApplication.CreateBuilder(args); var app = builder.Build();  app.UseSecureOps(options => {    
+/// options.SecureOpsEndpointsOptions.RoutePrefix = "/secure-ops";    
+/// options.SecureOpsEndpointsOptions.EnableUserPermissionManagement = true;    
+/// options.SecureOpsEndpointsOptions.EnableGlobalPermissionManagement = true; });  app.Run(); </code></remarks>
 public static class SecureOpsAppBuilderExtensions
 {
     /// <summary>
-    /// Registers SecureOps-related endpoints into the routing system using the provided configuration.
+    /// Configures the application to use secure operations middleware, including authentication,  authorization, and
+    /// optional permission management endpoints.
     /// </summary>
-    /// <param name="app">The web application.</param>
-    /// <param name="configure">The delegate used to configure endpoints like permission APIs.</param>
-    /// <returns>The original web application (for chaining).</returns>
+    /// <remarks>This method sets up authentication and authorization middleware for the application. If 
+    /// <paramref name="configure"/> is provided and the <see cref="SecureOpsMiddlewareOptions"/>  include endpoint
+    /// options, permission management endpoints will be mapped to the application.  Use this method to enable secure
+    /// operations in your application, including features such as  user and global permission management, and listing
+    /// all permissions. Ensure that the application  has appropriate authentication and authorization mechanisms
+    /// configured.</remarks>
+    /// <param name="app">The <see cref="WebApplication"/> instance to configure.</param>
+    /// <param name="configure">An optional delegate to configure <see cref="SecureOpsMiddlewareOptions"/>. If provided,  this delegate allows
+    /// customization of secure operations settings, such as endpoint routing  and permission management options.</param>
+    /// <returns>The configured <see cref="WebApplication"/> instance.</returns>
     public static WebApplication UseSecureOps(
         this WebApplication app,
         Action<SecureOpsMiddlewareOptions>? configure = null)
@@ -21,22 +40,34 @@ public static class SecureOpsAppBuilderExtensions
         var ops = new SecureOpsMiddlewareOptions();
         configure?.Invoke(ops);
         
-        if (ops.ApiOptions is not null)
+        if (ops.SecureOpsEndpointsOptions is not null)
         {
             MapPermissionEndpoints(app,options =>
             {
-                options.RoutePrefix = ops.ApiOptions.RoutePrefix;
-                options.PermissionClaim = ops.ApiOptions.PermissionClaim;
-                options.EnableUserPermissionManagement = ops.ApiOptions.EnableUserPermissionManagement;
-                options.EnableGlobalPermissionManagement = ops.ApiOptions.EnableGlobalPermissionManagement;
-                options.EnableListingAllPermissions = ops.ApiOptions.EnableListingAllPermissions;
+                options.RoutePrefix = ops.SecureOpsEndpointsOptions.RoutePrefix;
+                options.PermissionClaim = ops.SecureOpsEndpointsOptions.PermissionClaim;
+                options.EnableUserPermissionManagement = ops.SecureOpsEndpointsOptions.EnableUserPermissionManagement;
+                options.EnableGlobalPermissionManagement = ops.SecureOpsEndpointsOptions.EnableGlobalPermissionManagement;
+                options.EnableListingAllPermissions = ops.SecureOpsEndpointsOptions.EnableListingAllPermissions;
             });
         }
         app.UseAuthentication();
         app.UseAuthorization();
         return app;
     }
-
+    /// <summary>
+    /// Configures and maps permission-related endpoints to the specified <see cref="IEndpointRouteBuilder"/>.
+    /// </summary>
+    /// <remarks>This method maps endpoints for managing user and global permissions based on the
+    /// configuration provided. The following endpoints may be mapped, depending on the options: <list type="bullet">
+    /// <item> <description>User permission management endpoints, including adding, removing, and retrieving permissions
+    /// for a specific user.</description> </item> <item> <description>Global permission management endpoints, including
+    /// adding and removing global permissions.</description> </item> <item> <description>An endpoint for listing all
+    /// permissions.</description> </item> </list> Authorization requirements can be applied to the endpoints based on
+    /// the <see cref="SecureOpsEndpointsOptions.PermissionClaim"/>.</remarks>
+    /// <param name="app">The <see cref="IEndpointRouteBuilder"/> used to define the endpoints.</param>
+    /// <param name="configure">An optional delegate to configure <see cref="SecureOpsEndpointsOptions"/> for customizing endpoint behavior. If
+    /// not provided, default options are used.</param>
     private static void MapPermissionEndpoints(
         IEndpointRouteBuilder app,
         Action<SecureOpsEndpointsOptions>? configure = null)
