@@ -1,5 +1,9 @@
 # 🔐 SecureOps — Feature-Based Permission Authorization for ASP.NET Core
 
+[![NuGet Version](https://img.shields.io/nuget/v/SecureOps.svg)](https://www.nuget.org/packages/SecureOps)
+[![CI/CD](https://github.com/eruzairshafi/SecureOps/actions/workflows/nuget-publish.yml/badge.svg)](https://github.com/eruzairshafi/SecureOps/actions)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **SecureOps** is a lightweight, extensible, and developer-friendly NuGet package for implementing feature-based (permission-based) authorization in ASP.NET Core. It provides attribute-level permission checks, customizable claim resolution, caching (in-memory or Redis), and optional API endpoints to manage permissions dynamically.
 
 ## 🚀 Features
