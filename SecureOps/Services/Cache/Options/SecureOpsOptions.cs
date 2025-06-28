@@ -3,6 +3,7 @@ using SecureOps.Services.Cache.Enums;
 using System.Security.Claims;
 
 namespace SecureOps.Services.Cache.Options;
+
 /// <summary>
 /// Represents configuration options for secure operations, including caching and authentication settings.
 /// </summary>
@@ -12,20 +13,26 @@ namespace SecureOps.Services.Cache.Options;
 /// cref="UserIdClaimType"/> property determines the  claim type used to identify the user.</remarks>
 public class SecureOpsOptions
 {
-   /// <summary>
-   /// Gets or sets the caching mode used by the application.
-   /// </summary>
+
+    /// <summary>
+    /// Gets or sets the caching mode used by the application.
+    /// </summary>
+    /// <remarks>This property specifies the caching mode to be used for storing and retrieving data.
+    /// and can be set to <see cref="CacheMode.Memory"/> for in-memory caching or <see cref="CacheMode.Redis"/> for distributed caching using Redis.</remarks>
     public CacheMode CacheMode { get; set; } = CacheMode.Memory;
 
     /// <summary>
-    /// Gets or sets the authentication options used to configure authentication behavior for the application.
+    /// Gets or sets the authentication options used to configure authentication behavior.
     /// </summary>
+    /// <remarks>This property allows you to specify various authentication settings, such as the default scheme 
+    /// the supported schemes for authentication. It is used to configure how the application handles user authentication.</remarks>
     public AuthenticationOptions AuthenticationOptions { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the claim type used to identify the user ID in authentication and authorization processes.
     /// </summary>
-    /// <remarks>The default value is <see cref="ClaimTypes.Name"/>, which represents the user's name.
+    /// <remarks>This property specifies the claim type that will be used to retrieve the user ID from the claims principal during authentication and authorization operations. 
+    /// The default value is <see cref="ClaimTypes.Name"/>, which corresponds to the user's name claim.</remarks>
     public string UserIdClaimType { get; set; } = ClaimTypes.Name;
 
     /// <summary>
