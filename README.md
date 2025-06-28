@@ -23,7 +23,7 @@ dotnet add package SecureOps
 Or clone and build from source:
 
 ```bash
-git clone https://github.com/your-username/SecureOps.git
+git clone https://github.com/eruzairshafi/SecureOps.git
 cd SecureOps
 dotnet build
 ```
@@ -125,6 +125,7 @@ Example:
 
 ```csharp
 options.CacheMode = CacheMode.Redis;
+options.RedisConfiguration = "localhost:6379";
 ```
 
 ## 🧪 Exposing Management Endpoints
