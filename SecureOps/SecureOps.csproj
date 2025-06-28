@@ -1,23 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	<Version>1.0.1</Version>
-	<Authors>Uzair Shafi</Authors>
-	<PackageId>SecureOps</PackageId>
-	<Description>Feature-based authorization for ASP.NET Core with support for permission claims, caching, and minimal API endpoints.</Description>
-	<PackageTags>authorization permissions aspnetcore jwt security</PackageTags>
-	<RepositoryUrl>https://github.com/eruzairshafi/SecureOps</RepositoryUrl>
-	<PackageLicenseExpression>MIT</PackageLicenseExpression>
-	<IncludeSymbols>true</IncludeSymbols>
-	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\SecureOps.xml</DocumentationFile>
-  </PropertyGroup>
-
- <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Version>1.0.3</Version>
+		<Authors>Uzair Shafi</Authors>
+		<PackageId>SecureOps</PackageId>
+		<Description>Feature-based authorization for ASP.NET Core with support for permission claims, caching, and minimal API endpoints.</Description>
+		<PackageTags>authorization permissions aspnetcore jwt security</PackageTags>
+		<RepositoryUrl>https://github.com/eruzairshafi/SecureOps</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\SecureOps.xml</DocumentationFile>
+		<PackageReadmeFile>docs/NuGetReadme.md</PackageReadmeFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="StackExchange.Redis" Version="2.8.41" />
+	</ItemGroup>	
+	
+	<ItemGroup>
+		<None Include="NuGetReadme.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+	
 </Project>

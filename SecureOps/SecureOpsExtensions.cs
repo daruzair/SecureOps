@@ -5,32 +5,35 @@ using SecureOps.Services;
 using SecureOps.Services.Cache.Enums;
 using SecureOps.Services.Cache.Options;
 using SecureOps.Services.CacheServices;
+using StackExchange.Redis;
 
 namespace SecureOps;
 
 /// <summary>
-/// Provides extension methods for configuring secure operations in an application.
+/// Provides extension methods for configuring secure operations in an application, including authentication, 
+/// authorization, and permission management.
 /// </summary>
-/// <remarks>The <c>SecureOpsExtensions</c> class includes methods to configure authentication, authorization, 
-/// and permission management for secure operations. These methods allow customization of authentication  schemes,
-/// caching strategies, and permission store implementations.</remarks>
+/// <remarks>The <see cref="SecureOpsExtensions"/> class contains methods to integrate secure operations into an
+/// application's  service collection. These methods allow for flexible configuration of authentication schemes,
+/// authorization policies,  and permission management using either in-memory or Redis-based caching. Additionally,
+/// custom implementations of  <see cref="IPermissionStore"/> can be registered to tailor permission management to
+/// specific requirements.</remarks>
 public static class SecureOpsExtensions
 {
     /// <summary>
     /// Configures secure operations for the application by setting up authentication, authorization,  and permission
-    /// services with optional caching mechanisms.
+    /// management services.
     /// </summary>
-    /// <remarks>This method registers the necessary services for secure operations, including authentication,
-    /// authorization, and permission management. It supports both in-memory and Redis-based caching for  permission
-    /// services, depending on the <see cref="SecureOpsOptions.CacheMode"/> configuration.  If <paramref
-    /// name="configure"/> is provided, it allows customization of authentication options,  caching mode, and other
-    /// settings. By default, in-memory caching is used unless Redis is explicitly  configured.  Example usage: <code>
-    /// services.AddSecureOps(options => {     options.CacheMode = CacheMode.Redis;     options.AuthenticationOptions =
-    /// new AuthenticationOptions     {         DefaultScheme = "MyScheme",         DefaultChallengeScheme =
-    /// "MyChallengeScheme"     }; }); </code></remarks>
-    /// <param name="services">The <see cref="IServiceCollection"/> to which the secure operations services are added.</param>
-    /// <param name="configure">An optional delegate to configure <see cref="SecureOpsOptions"/>. If not provided, default options are used.</param>
+    /// <remarks>This method sets up authentication and authorization services, as well as permission
+    /// management  using either in-memory or Redis-based caching, depending on the configuration provided in  <paramref
+    /// name="configure"/>.   If Redis caching is selected, the <see cref="SecureOpsOptions.RedisConfiguration"/> must
+    /// be set,  or an <see cref="InvalidOperationException"/> will be thrown. In-memory caching is used by default  if
+    /// Redis is not configured.  The method also registers default authentication schemes if specified in  <see
+    /// cref="SecureOpsOptions.AuthenticationOptions"/>.</remarks>
+    /// <param name="services">The <see cref="IServiceCollection"/> to which the secure operations services will be added.</param>
+    /// <param name="configure">An optional delegate to configure <see cref="SecureOpsOptions"/>. If not provided, default options will be used.</param>
     /// <returns>An <see cref="AuthenticationBuilder"/> that can be used to further configure authentication schemes.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if Redis caching is selected and <see cref="SecureOpsOptions.RedisConfiguration"/> is not set.</exception>
     public static AuthenticationBuilder AddSecureOps(this IServiceCollection services, Action<SecureOpsOptions>? configure = null)
     {
         var options = new SecureOpsOptions();
@@ -40,8 +43,20 @@ public static class SecureOpsExtensions
 
         if (options.CacheMode == CacheMode.Redis)
         {
+            services.TryAddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                // Use existing if already added, else create using configuration string
+                if (!string.IsNullOrEmpty(options.RedisConfiguration))
+                {
+                    return ConnectionMultiplexer.Connect(options.RedisConfiguration);
+                }
+
+                throw new InvalidOperationException("RedisConfiguration must be set if IConnectionMultiplexer is not already registered.");
+            });
+
             services.AddScoped<IPermissionService, RedisCachedPermissionService>();
         }
+
         else
         {
             services.AddMemoryCache();

@@ -5,12 +5,11 @@ using System.Security.Claims;
 namespace SecureOps.Services.Cache.Options;
 
 /// <summary>
-/// Represents configuration options for secure operations, including caching and authentication settings.
+/// Represents configuration options for securing operations in an application.
 /// </summary>
-/// <remarks>This class provides options to configure caching behavior and authentication settings for secure
-/// operations. Use the <see cref="CacheMode"/> property to specify the caching strategy, and the <see
-/// cref="AuthenticationOptions"/>  property to configure authentication-related settings. The <see
-/// cref="UserIdClaimType"/> property determines the  claim type used to identify the user.</remarks>
+/// <remarks>This class provides properties and methods to configure caching, authentication, and user
+/// identification settings. It is designed to centralize security-related configuration for applications, allowing
+/// developers to easily manage caching modes, authentication options, and user claim types.</remarks>
 public class SecureOpsOptions
 {
 
@@ -50,6 +49,13 @@ public class SecureOpsOptions
     /// enabling in-memory caching for subsequent operations. Use this method when you want to optimize performance by
     /// storing data in memory instead of other caching mechanisms.</remarks>
     public void UseMemory() => CacheMode = CacheMode.Memory;
-    
+
+    /// <summary>
+    /// Gets or sets the configuration string for connecting to a Redis server.
+    /// </summary>
+    /// <remarks>This property should contain the connection string used to connect to a Redis server.
+    /// It is required when <see cref="CacheMode"/> is set to <see cref="CacheMode.Redis"/>. </remarks>
+    public string? RedisConfiguration { get; set; }
+
 }
 
