@@ -16,9 +16,9 @@ public static class SecureOpsAppBuilderExtensions
     /// <returns>The original web application (for chaining).</returns>
     public static WebApplication UseSecureOps(
         this WebApplication app,
-        Action<SecureOpsOptions>? configure = null)
+        Action<SecureOpsMiddlewareOptions>? configure = null)
     {
-        var ops = new SecureOpsOptions();
+        var ops = new SecureOpsMiddlewareOptions();
         configure?.Invoke(ops);
         
         if (ops.ApiOptions is not null)
@@ -39,9 +39,9 @@ public static class SecureOpsAppBuilderExtensions
 
     private static void MapPermissionEndpoints(
         IEndpointRouteBuilder app,
-        Action<SecureOpsApiOptions>? configure = null)
+        Action<SecureOpsEndpointsOptions>? configure = null)
     {
-        var options = new SecureOpsApiOptions();
+        var options = new SecureOpsEndpointsOptions();
         configure?.Invoke(options);
 
         var group = app.MapGroup(options.RoutePrefix).WithTags("Permissions");

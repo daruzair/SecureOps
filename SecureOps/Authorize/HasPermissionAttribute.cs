@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using SecureOps.Services;
+using SecureOps.Services.Cache.Options;
+using System.Security.Claims;
 
 namespace SecureOps.Filters;
 public class HasPermissionAttribute : Attribute, IAsyncAuthorizationFilter
@@ -15,8 +17,12 @@ public class HasPermissionAttribute : Attribute, IAsyncAuthorizationFilter
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-        var user = context.HttpContext.User;
-        var userId = user?.Identity?.Name;
+        ClaimsPrincipal user = context.HttpContext.User;
+
+        SecureOpsOptions secureOpsOptions = context.HttpContext.RequestServices
+            .GetRequiredService<SecureOpsOptions>();
+
+        var userId = user.Claims.FirstOrDefault(c => c.Type == secureOpsOptions.UserIdClaimType)?.Value;
 
         if (!(user?.Identity?.IsAuthenticated ?? false))
         {

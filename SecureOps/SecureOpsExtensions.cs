@@ -41,7 +41,7 @@ public static class SecureOpsExtensions
         });
 
         services.AddAuthorization();
-
+        services.AddSingleton(options);
         return builder;
     }
     public static AuthenticationBuilder AddSecureOps(this IServiceCollection services, string DefaultScheme)
